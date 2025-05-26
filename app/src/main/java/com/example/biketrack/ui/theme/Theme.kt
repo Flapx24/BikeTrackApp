@@ -12,32 +12,48 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Green80,
+    onPrimary = Neutral10,
+    primaryContainer = GreenGrey30,
+    onPrimaryContainer = Green90,
+    secondary = GreenGrey80,
+    onSecondary = Neutral20,
+    secondaryContainer = NeutralVariant30,
+    onSecondaryContainer = NeutralVariant90,
+    tertiary = GreenGrey60,
+    onTertiary = Neutral10,
+    background = Neutral10,
+    onBackground = Neutral90,
+    surface = Neutral10,
+    onSurface = Neutral90,
+    surfaceVariant = NeutralVariant30,
+    onSurfaceVariant = NeutralVariant80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Green40,
+    onPrimary = Neutral99,
+    primaryContainer = Green90,
+    onPrimaryContainer = GreenGrey30,
+    secondary = GreenGrey50,
+    onSecondary = Neutral99,
+    secondaryContainer = GreenGrey90,
+    onSecondaryContainer = NeutralVariant30,
+    tertiary = GreenGrey60,
+    onTertiary = Neutral99,
+    background = Neutral99,
+    onBackground = Neutral10,
+    surface = Neutral99,
+    onSurface = Neutral10,
+    surfaceVariant = NeutralVariant90,
+    onSurfaceVariant = NeutralVariant30
 )
 
 @Composable
 fun BikeTrackTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
