@@ -1,6 +1,8 @@
 package com.example.biketrack.core.config
 
+import com.example.biketrack.BuildConfig
+
 object ApiConfig {
-    const val BASE_URL = "biketrack_api_url"
-    const val TIMEOUT_SECONDS = 30L
-} 
+    val BASE_URL: String = BuildConfig.API_BASE_URL
+    val TIMEOUT_SECONDS: Long = BuildConfig.API_TIMEOUT_SECONDS
+}
