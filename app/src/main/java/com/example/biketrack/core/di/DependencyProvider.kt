@@ -8,8 +8,10 @@ import com.example.biketrack.domain.repositories.AuthRepository
 import com.example.biketrack.domain.usecases.auth.AutoLoginUseCase
 import com.example.biketrack.domain.usecases.auth.LoginUseCase
 import com.example.biketrack.domain.usecases.auth.LogoutUseCase
+import com.example.biketrack.domain.usecases.auth.RegisterUseCase
 import com.example.biketrack.presentation.viewmodels.LoginViewModel
 import com.example.biketrack.presentation.viewmodels.MainViewModel
+import com.example.biketrack.presentation.viewmodels.RegisterViewModel
 
 object DependencyProvider {
     
@@ -47,6 +49,10 @@ object DependencyProvider {
         LogoutUseCase(authRepository)
     }
     
+    private val registerUseCase by lazy {
+        RegisterUseCase(authRepository)
+    }
+    
     // ViewModels
     fun provideLoginViewModel(): LoginViewModel {
         return LoginViewModel(loginUseCase, autoLoginUseCase)
@@ -54,5 +60,9 @@ object DependencyProvider {
     
     fun provideMainViewModel(): MainViewModel {
         return MainViewModel(logoutUseCase)
+    }
+    
+    fun provideRegisterViewModel(): RegisterViewModel {
+        return RegisterViewModel(registerUseCase)
     }
 } 

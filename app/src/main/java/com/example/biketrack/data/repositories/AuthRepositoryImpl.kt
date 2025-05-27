@@ -5,6 +5,7 @@ import com.example.biketrack.data.local.UserSession
 import com.example.biketrack.data.models.LoginRequest
 import com.example.biketrack.data.models.LoginResponse
 import com.example.biketrack.data.models.RegisterRequest
+import com.example.biketrack.data.models.RegisterResponse
 import com.example.biketrack.data.remote.AuthApiService
 import com.example.biketrack.domain.repositories.AuthRepository
 import com.example.biketrack.domain.repositories.AuthResult
@@ -71,7 +72,21 @@ class AuthRepositoryImpl(
                         AuthResult.Error(registerResponse?.message ?: "Error desconocido")
                     }
                 } else {
-                    AuthResult.Error("Error de conexión: ${response.code()}")
+                    // Try to extract error message from API response
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        if (errorBody != null) {
+                            val gson = Gson()
+                            val errorResponse = gson.fromJson(errorBody, RegisterResponse::class.java)
+                            errorResponse.message
+                        } else {
+                            null
+                        }
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                    AuthResult.Error(errorMessage ?: "Error de conexión: ${response.code()}")
                 }
             } catch (e: Exception) {
                 AuthResult.Error("Error de red: ${e.message}")
