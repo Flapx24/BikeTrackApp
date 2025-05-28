@@ -10,7 +10,7 @@ data class RouteDto(
     val title: String,
     val description: String,
     val difficulty: Difficulty,
-    val imageUrls: List<String>,
+    val imageUrls: List<String>?,
     val city: String,
     val routePoints: List<GeoPoint>,
     val calculatedRoutePoints: List<GeoPoint>?,
@@ -26,11 +26,11 @@ data class RouteDto(
 data class RouteSummaryDto(
     val id: Long,
     val title: String,
-    val description: String,
+    val description: String?,
     val difficulty: Difficulty,
-    val imageUrls: List<String>,
+    val imageUrls: List<String>?,
     val city: String,
-    val routePoints: List<GeoPoint>,
+    val routePoints: List<GeoPoint>?,
     val averageReviewScore: Double,
     val reviewCount: Int,
     val updateCount: Int
