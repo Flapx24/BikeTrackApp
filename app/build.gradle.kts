@@ -148,7 +148,8 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.gson)
     implementation(libs.coil.compose)
-    
+    implementation("org.osmdroid:osmdroid-android:6.1.17")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
