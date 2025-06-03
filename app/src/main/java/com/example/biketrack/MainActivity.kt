@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.biketrack.core.di.DependencyProvider
 import com.example.biketrack.presentation.screens.LoginScreen
 import com.example.biketrack.presentation.screens.MainScreen
 import com.example.biketrack.presentation.screens.RegisterScreen
+import com.example.biketrack.presentation.screens.RouteDetailScreen
+import com.example.biketrack.presentation.screens.RouteUpdatesScreen
 import com.example.biketrack.presentation.viewmodels.LoginViewModel
 import com.example.biketrack.presentation.viewmodels.MainViewModel
 import com.example.biketrack.ui.theme.BikeTrackTheme
@@ -89,7 +93,46 @@ fun BikeTrackApp() {
             }
             
             MainScreen(
-                onLogout = { mainViewModel.logout() }
+                onLogout = { mainViewModel.logout() },
+                onNavigateToRouteDetail = { routeId ->
+                    navController.navigate("route_detail/$routeId")
+                }
+            )
+        }
+        
+        composable(
+            route = "route_detail/{routeId}",
+            arguments = listOf(navArgument("routeId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val routeId = backStackEntry.arguments?.getLong("routeId") ?: 0L
+            
+            RouteDetailScreen(
+                routeId = routeId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onNavigateToUpdates = { updateRouteId, routeName ->
+                    navController.navigate("route_updates/$updateRouteId/$routeName")
+                }
+            )
+        }
+        
+        composable(
+            route = "route_updates/{routeId}/{routeName}",
+            arguments = listOf(
+                navArgument("routeId") { type = NavType.LongType },
+                navArgument("routeName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val routeId = backStackEntry.arguments?.getLong("routeId") ?: 0L
+            val routeName = backStackEntry.arguments?.getString("routeName") ?: ""
+            
+            RouteUpdatesScreen(
+                routeId = routeId,
+                routeName = routeName,
+                onBackClick = {
+                    navController.popBackStack()
+                }
             )
         }
     }

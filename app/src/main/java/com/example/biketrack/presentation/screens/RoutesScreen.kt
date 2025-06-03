@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RoutesScreen(
+    onNavigateToRouteDetail: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val routesViewModel: RoutesViewModel = viewModel { 
@@ -156,16 +157,19 @@ fun RoutesScreen(
                         state = listState,
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        userScrollEnabled = true,
+                        reverseLayout = false
                     ) {
                         items(
                             items = uiState.routes,
-                            key = { route -> route.id }
+                            key = { route -> "route_${route.id}" },
+                            contentType = { "route_card" }
                         ) { route ->
                             RouteCard(
                                 route = route,
                                 onRouteClick = { clickedRoute ->
-                                    // TODO: Navigate to route details
+                                    onNavigateToRouteDetail(clickedRoute.id)
                                 }
                             )
                         }

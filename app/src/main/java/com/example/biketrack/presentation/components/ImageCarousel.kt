@@ -115,7 +115,8 @@ fun ImageCarousel(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            var imageLoadState by remember { mutableStateOf<AsyncImagePainter.State?>(null) }
+            var imageLoadState by remember(imageUrls[page]) { mutableStateOf<AsyncImagePainter.State?>(null) }
+            var hasTriedToLoad by remember(imageUrls[page]) { mutableStateOf(false) }
             val fullImageUrl = buildImageUrl(imageUrls[page])
             
             Box(
@@ -123,34 +124,27 @@ fun ImageCarousel(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp))
             ) {
+                if (!hasTriedToLoad || imageLoadState !is AsyncImagePainter.State.Error) {
                 AsyncImage(
                     model = ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
                         .data(fullImageUrl)
                         .crossfade(true)
-                        .listener(
-                            onStart = { 
-                                Log.d("ImageCarousel", "Loading image: $fullImageUrl")
-                                Log.d("ImageCarousel", "Original path: ${imageUrls[page]}")
-                                Log.d("ImageCarousel", "URL valid: ${isValidUrl(fullImageUrl)}")
-                            },
-                            onError = { _, result -> 
-                                Log.e("ImageCarousel", "Error loading image: $fullImageUrl", result.throwable)
-                                Log.e("ImageCarousel", "Error details: ${result.throwable?.message}")
-                            },
-                            onSuccess = { _, _ -> 
-                                Log.d("ImageCarousel", "Successfully loaded image: $fullImageUrl")
-                            }
-                        )
                         .build(),
                     contentDescription = "Imagen ${page + 1} de ${imageUrls.size}",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
-                    onState = { state -> imageLoadState = state }
+                        onState = { state -> 
+                            imageLoadState = state
+                            if (state is AsyncImagePainter.State.Error || state is AsyncImagePainter.State.Success) {
+                                hasTriedToLoad = true
+                            }
+                        }
                 )
+                }
                 
                 // Loading state overlay
-                when (imageLoadState) {
-                    null, is AsyncImagePainter.State.Loading -> {
+                when {
+                    !hasTriedToLoad || imageLoadState is AsyncImagePainter.State.Loading -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -163,7 +157,7 @@ fun ImageCarousel(
                             )
                         }
                     }
-                    is AsyncImagePainter.State.Error -> {
+                    hasTriedToLoad && imageLoadState is AsyncImagePainter.State.Error -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -181,15 +175,12 @@ fun ImageCarousel(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Error al cargar imagen",
+                                    text = "Imagen no disponible",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
                             }
                         }
-                    }
-                    else -> {
-                        // Success state - no overlay needed
                     }
                 }
             }

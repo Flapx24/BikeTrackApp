@@ -13,15 +13,10 @@ import com.example.biketrack.domain.usecases.auth.AutoLoginUseCase
 import com.example.biketrack.domain.usecases.auth.LoginUseCase
 import com.example.biketrack.domain.usecases.auth.LogoutUseCase
 import com.example.biketrack.domain.usecases.auth.RegisterUseCase
-import com.example.biketrack.domain.usecases.route.FilterRoutesUseCase
-import com.example.biketrack.domain.usecases.route.GetRoutesUseCase
+import com.example.biketrack.domain.usecases.route.*
 import com.example.biketrack.domain.usecases.workshop.GetWorkshopByIdUseCase
 import com.example.biketrack.domain.usecases.workshop.GetWorkshopsByCityUseCase
-import com.example.biketrack.presentation.viewmodels.LoginViewModel
-import com.example.biketrack.presentation.viewmodels.MainViewModel
-import com.example.biketrack.presentation.viewmodels.RegisterViewModel
-import com.example.biketrack.presentation.viewmodels.RoutesViewModel
-import com.example.biketrack.presentation.viewmodels.WorkshopsViewModel
+import com.example.biketrack.presentation.viewmodels.*
 
 object DependencyProvider {
     
@@ -87,6 +82,26 @@ object DependencyProvider {
         FilterRoutesUseCase(routeRepository)
     }
     
+    private val getRouteByIdUseCase by lazy {
+        GetRouteByIdUseCase(routeRepository)
+    }
+    
+    private val getRouteReviewsUseCase by lazy {
+        GetRouteReviewsUseCase(routeRepository)
+    }
+    
+    private val manageReviewUseCase by lazy {
+        ManageReviewUseCase(routeRepository)
+    }
+    
+    private val getRouteUpdatesUseCase by lazy {
+        GetRouteUpdatesUseCase(routeRepository)
+    }
+    
+    private val manageRouteUpdatesUseCase by lazy {
+        ManageRouteUpdatesUseCase(routeRepository)
+    }
+    
     private val getWorkshopsByCityUseCase by lazy {
         GetWorkshopsByCityUseCase(workshopRepository)
     }
@@ -112,7 +127,19 @@ object DependencyProvider {
         return RoutesViewModel(getRoutesUseCase, filterRoutesUseCase)
     }
     
+    fun provideRouteDetailViewModel(): RouteDetailViewModel {
+        return RouteDetailViewModel(
+            getRouteByIdUseCase,
+            getRouteReviewsUseCase,
+            manageReviewUseCase
+        )
+    }
+    
     fun provideWorkshopsViewModel(): WorkshopsViewModel {
         return WorkshopsViewModel(getWorkshopsByCityUseCase, getWorkshopByIdUseCase)
+    }
+    
+    fun provideRouteUpdatesViewModel(): RouteUpdatesViewModel {
+        return RouteUpdatesViewModel(getRouteUpdatesUseCase, manageRouteUpdatesUseCase)
     }
 } 
