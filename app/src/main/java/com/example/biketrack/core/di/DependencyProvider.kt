@@ -4,15 +4,19 @@ import android.content.Context
 import com.example.biketrack.data.local.SecureStorageManager
 import com.example.biketrack.data.remote.RetrofitClient
 import com.example.biketrack.data.repositories.AuthRepositoryImpl
+import com.example.biketrack.data.repositories.BicycleRepositoryImpl
 import com.example.biketrack.data.repositories.RouteRepositoryImpl
 import com.example.biketrack.data.repositories.WorkshopRepositoryImpl
 import com.example.biketrack.domain.repositories.AuthRepository
+import com.example.biketrack.domain.repositories.BicycleRepository
 import com.example.biketrack.domain.repositories.RouteRepository
 import com.example.biketrack.domain.repositories.WorkshopRepository
 import com.example.biketrack.domain.usecases.auth.AutoLoginUseCase
 import com.example.biketrack.domain.usecases.auth.LoginUseCase
 import com.example.biketrack.domain.usecases.auth.LogoutUseCase
 import com.example.biketrack.domain.usecases.auth.RegisterUseCase
+import com.example.biketrack.domain.usecases.bicycle.GetBicycleByIdUseCase
+import com.example.biketrack.domain.usecases.bicycle.GetUserBicyclesUseCase
 import com.example.biketrack.domain.usecases.route.*
 import com.example.biketrack.domain.usecases.workshop.GetWorkshopByIdUseCase
 import com.example.biketrack.domain.usecases.workshop.GetWorkshopsByCityUseCase
@@ -44,6 +48,14 @@ object DependencyProvider {
         RetrofitClient.workshopApiService
     }
     
+    private val bicycleApiService by lazy {
+        RetrofitClient.bicycleApiService
+    }
+    
+    private val componentApiService by lazy {
+        RetrofitClient.componentApiService
+    }
+    
     // Repositories
     private val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(authApiService, secureStorageManager)
@@ -55,6 +67,10 @@ object DependencyProvider {
     
     private val workshopRepository: WorkshopRepository by lazy {
         WorkshopRepositoryImpl(workshopApiService)
+    }
+    
+    private val bicycleRepository: BicycleRepository by lazy {
+        BicycleRepositoryImpl(bicycleApiService, componentApiService)
     }
     
     // Use Cases
@@ -110,6 +126,14 @@ object DependencyProvider {
         GetWorkshopByIdUseCase(workshopRepository)
     }
     
+    private val getUserBicyclesUseCase by lazy {
+        GetUserBicyclesUseCase(bicycleRepository)
+    }
+    
+    private val getBicycleByIdUseCase by lazy {
+        GetBicycleByIdUseCase(bicycleRepository)
+    }
+    
     // ViewModels
     fun provideLoginViewModel(): LoginViewModel {
         return LoginViewModel(loginUseCase, autoLoginUseCase)
@@ -141,5 +165,13 @@ object DependencyProvider {
     
     fun provideRouteUpdatesViewModel(): RouteUpdatesViewModel {
         return RouteUpdatesViewModel(getRouteUpdatesUseCase, manageRouteUpdatesUseCase)
+    }
+    
+    fun provideBicyclesViewModel(): BicyclesViewModel {
+        return BicyclesViewModel(getUserBicyclesUseCase, getBicycleByIdUseCase, bicycleRepository)
+    }
+    
+    fun provideBicycleDetailViewModel(): BicycleDetailViewModel {
+        return BicycleDetailViewModel(bicycleRepository)
     }
 } 

@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.biketrack.core.di.DependencyProvider
+import com.example.biketrack.presentation.screens.BicycleDetailScreen
 import com.example.biketrack.presentation.screens.LoginScreen
 import com.example.biketrack.presentation.screens.MainScreen
 import com.example.biketrack.presentation.screens.RegisterScreen
@@ -96,6 +97,9 @@ fun BikeTrackApp() {
                 onLogout = { mainViewModel.logout() },
                 onNavigateToRouteDetail = { routeId ->
                     navController.navigate("route_detail/$routeId")
+                },
+                onNavigateToBicycleDetail = { bicycleId ->
+                    navController.navigate("bicycle_detail/$bicycleId")
                 }
             )
         }
@@ -130,6 +134,20 @@ fun BikeTrackApp() {
             RouteUpdatesScreen(
                 routeId = routeId,
                 routeName = routeName,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        
+        composable(
+            route = "bicycle_detail/{bicycleId}",
+            arguments = listOf(navArgument("bicycleId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val bicycleId = backStackEntry.arguments?.getLong("bicycleId") ?: 0L
+            
+            BicycleDetailScreen(
+                bicycleId = bicycleId,
                 onBackClick = {
                     navController.popBackStack()
                 }

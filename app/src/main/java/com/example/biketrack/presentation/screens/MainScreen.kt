@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 fun MainScreen(
     onLogout: () -> Unit,
     onNavigateToRouteDetail: (Long) -> Unit,
+    onNavigateToBicycleDetail: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -148,6 +149,7 @@ fun MainScreen(
                 modifier = Modifier.padding(innerPadding)
             )
             1 -> BicyclesScreen(
+                onNavigateToBicycleDetail = onNavigateToBicycleDetail,
                 modifier = Modifier.padding(innerPadding)
             )
             2 -> WorkshopsScreen(
