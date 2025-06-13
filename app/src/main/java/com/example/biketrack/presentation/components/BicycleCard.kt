@@ -79,23 +79,33 @@ fun BicycleCard(
                     if (bicycle.iconUrl != null && (!hasTriedToLoad || imageLoadState !is AsyncImagePainter.State.Error)) {
                         val fullImageUrl = buildImageUrl(bicycle.iconUrl)
                         
-                        AsyncImage(
-                            model = ImageRequest.Builder(context)
-                                .data(fullImageUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = "Icono de ${bicycle.name}",
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop,
-                            onState = { state -> 
-                                imageLoadState = state
-                                if (state is AsyncImagePainter.State.Error || state is AsyncImagePainter.State.Success) {
-                                    hasTriedToLoad = true
-                                }
+                        // Background circle for the image
+                        Surface(
+                            modifier = Modifier.size(64.dp),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.padding(12.dp)
+                            ) {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(fullImageUrl)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = "Icono de ${bicycle.name}",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit,
+                                    onState = { state -> 
+                                        imageLoadState = state
+                                        if (state is AsyncImagePainter.State.Error || state is AsyncImagePainter.State.Success) {
+                                            hasTriedToLoad = true
+                                        }
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                     
                     // Show fallback icon when no image URL or when image fails to load
@@ -103,7 +113,7 @@ fun BicycleCard(
                         Surface(
                             modifier = Modifier.size(64.dp),
                             shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center
@@ -111,7 +121,7 @@ fun BicycleCard(
                                 Icon(
                                     imageVector = Icons.Default.DirectionsBike,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(32.dp)
                                 )
                             }

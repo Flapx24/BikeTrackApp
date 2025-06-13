@@ -1,6 +1,7 @@
 package com.example.biketrack.presentation.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Home
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,55 +34,70 @@ fun MainScreen(
     
     // Logout confirmation modal
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { 
-                showLogoutDialog = false
-            },
-            title = {
-                Text(
-                    text = "Cerrar Sesión",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface
+        Dialog(onDismissRequest = { showLogoutDialog = false }) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
-            },
-            text = {
-                Text(
-                    text = "¿Estás seguro de que quieres cerrar sesión?",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showLogoutDialog = false
-                        onLogout()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
                 ) {
                     Text(
                         text = "Cerrar Sesión",
-                        color = MaterialTheme.colorScheme.onError
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { 
-                        showLogoutDialog = false
-                    }
-                ) {
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
                     Text(
-                        text = "Cancelar",
-                        color = MaterialTheme.colorScheme.primary
+                        text = "¿Estás seguro de que quieres cerrar sesión?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    // Action buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = { showLogoutDialog = false }
+                        ) {
+                            Text("Cancelar")
+                        }
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        
+                        Button(
+                            onClick = {
+                                showLogoutDialog = false
+                                onLogout()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(
+                                text = "Cerrar Sesión",
+                                color = MaterialTheme.colorScheme.onError
+                            )
+                        }
+                    }
                 }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
-        )
+            }
+        }
     }
     
     Scaffold(
