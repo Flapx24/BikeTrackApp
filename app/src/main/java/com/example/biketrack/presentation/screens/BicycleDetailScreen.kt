@@ -99,7 +99,8 @@ fun BicycleDetailScreen(
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .windowInsetsPadding(WindowInsets.navigationBars),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Add kilometers FAB (top)
@@ -136,7 +137,8 @@ fun BicycleDetailScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
@@ -310,7 +312,14 @@ private fun BicycleDetailContent(
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 140.dp, start = 0.dp, end = 0.dp) // Extra bottom padding for FABs
+        contentPadding = WindowInsets.navigationBars.asPaddingValues().let { navigationPadding ->
+            PaddingValues(
+                top = 16.dp,
+                bottom = maxOf(140.dp, navigationPadding.calculateBottomPadding() + 140.dp), // Extra bottom padding for FABs + navigation area
+                start = 0.dp,
+                end = 0.dp
+            )
+        }
     ) {
         // Bicycle Info Card
         item {
