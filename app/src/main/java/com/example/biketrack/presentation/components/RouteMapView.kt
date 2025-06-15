@@ -33,6 +33,7 @@ fun RouteMapView(
 ) {
     val context = LocalContext.current
     var mapView by remember { mutableStateOf<MapView?>(null) }
+    var hasInitializedView by remember { mutableStateOf(false) }
     
     // Determine which points to use
     val pointsToDisplay = calculatedRoutePoints ?: routePoints
@@ -100,9 +101,10 @@ fun RouteMapView(
                         minLng - lngPadding  // West
                     )
                     
-                    // Set the view to fit the bounding box
+                    // Set the view to fit the bounding box only on initial load
                     post {
                         zoomToBoundingBox(boundingBox, false, 50)
+                        hasInitializedView = true
                     }
                     
                     // Add route visualization
@@ -132,29 +134,33 @@ fun RouteMapView(
                     addOriginalRoutePoints(mapView, routePoints)
                 }
                 
-                // Recalculate bounds if needed
-                val pointsToUse = calculatedRoutePoints ?: routePoints
-                if (!pointsToUse.isNullOrEmpty()) {
-                    val latitudes = pointsToUse.map { it.lat }
-                    val longitudes = pointsToUse.map { it.lng }
-                    
-                    val minLat = latitudes.minOrNull() ?: 0.0
-                    val maxLat = latitudes.maxOrNull() ?: 0.0
-                    val minLng = longitudes.minOrNull() ?: 0.0
-                    val maxLng = longitudes.maxOrNull() ?: 0.0
-                    
-                    val latPadding = (maxLat - minLat) * 0.05
-                    val lngPadding = (maxLng - minLng) * 0.05
-                    
-                    val boundingBox = org.osmdroid.util.BoundingBox(
-                        maxLat + latPadding,
-                        maxLng + lngPadding, 
-                        minLat - latPadding,
-                        minLng - lngPadding
-                    )
-                    
-                    mapView.post {
-                        mapView.zoomToBoundingBox(boundingBox, false, 50)
+                // Only center the map if it hasn't been initialized yet
+                // This allows user to freely navigate after initial load
+                if (!hasInitializedView) {
+                    val pointsToUse = calculatedRoutePoints ?: routePoints
+                    if (!pointsToUse.isNullOrEmpty()) {
+                        val latitudes = pointsToUse.map { it.lat }
+                        val longitudes = pointsToUse.map { it.lng }
+                        
+                        val minLat = latitudes.minOrNull() ?: 0.0
+                        val maxLat = latitudes.maxOrNull() ?: 0.0
+                        val minLng = longitudes.minOrNull() ?: 0.0
+                        val maxLng = longitudes.maxOrNull() ?: 0.0
+                        
+                        val latPadding = (maxLat - minLat) * 0.05
+                        val lngPadding = (maxLng - minLng) * 0.05
+                        
+                        val boundingBox = org.osmdroid.util.BoundingBox(
+                            maxLat + latPadding,
+                            maxLng + lngPadding, 
+                            minLat - latPadding,
+                            minLng - lngPadding
+                        )
+                        
+                        mapView.post {
+                            mapView.zoomToBoundingBox(boundingBox, false, 50)
+                            hasInitializedView = true
+                        }
                     }
                 }
                 

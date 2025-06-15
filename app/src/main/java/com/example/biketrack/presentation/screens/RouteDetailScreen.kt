@@ -1,5 +1,7 @@
 package com.example.biketrack.presentation.screens
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -14,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ fun RouteDetailScreen(
     val uiState by remember { derivedStateOf { viewModel.uiState } }
     val snackbarHostState = remember { SnackbarHostState() }
     val listState = rememberLazyListState()
+    var isMapBeingInteracted by remember { mutableStateOf(false) }
     
     // Load route details on first composition
     LaunchedEffect(routeId) {
@@ -223,7 +227,7 @@ fun RouteDetailScreen(
                         .fillMaxSize()
                         .padding(innerPadding),
                     contentPadding = PaddingValues(bottom = 16.dp),
-                    userScrollEnabled = true,
+                    userScrollEnabled = !isMapBeingInteracted,
                     reverseLayout = false
                 ) {
                     val route = uiState.route!!
@@ -271,11 +275,17 @@ fun RouteDetailScreen(
                             shape = RoundedCornerShape(12.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
-                            RouteMapView(
-                                calculatedRoutePoints = route.calculatedRoutePoints,
-                                routePoints = route.routePoints,
-                                routeTitle = route.title
-                            )
+                            Box(
+                                modifier = Modifier.mapInteractionHandler { interacting ->
+                                    isMapBeingInteracted = interacting
+                                }
+                            ) {
+                                RouteMapView(
+                                    calculatedRoutePoints = route.calculatedRoutePoints,
+                                    routePoints = route.routePoints,
+                                    routeTitle = route.title
+                                )
+                            }
                         }
                         
                         Spacer(modifier = Modifier.height(24.dp))
@@ -576,5 +586,30 @@ private fun String.capitalizeFirstLetter(): String {
         }
     } else {
         this
+    }
+}
+
+/**
+ * Modifier extension that tracks map interaction without consuming events
+ * This allows all gestures to work on the map while disabling parent scroll
+ */
+private fun Modifier.mapInteractionHandler(
+    onInteractionChange: (Boolean) -> Unit
+): Modifier = this.pointerInput(Unit) {
+    awaitEachGesture {
+        // Wait for first touch down - don't consume it, let it pass to the map
+        awaitFirstDown(requireUnconsumed = false)
+        
+        // Notify that interaction started
+        onInteractionChange(true)
+        
+        // Track the gesture without consuming any events
+        do {
+            val event = awaitPointerEvent()
+            // Don't consume any events - let all gestures pass through to the map
+        } while (event.changes.any { it.pressed })
+        
+        // Notify that interaction ended
+        onInteractionChange(false)
     }
 } 
